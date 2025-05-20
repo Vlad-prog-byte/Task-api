@@ -4,16 +4,14 @@ import (
 	"fmt"
 	"net/http"
 	"task-api/internals/handlers"
-	"task-api/internals/storages"
-
+	"task-api/internals/services"
 	"github.com/gorilla/mux"
 )
 
 func main () {
-	store := storages.NewMemoryStore()
-	handler := handlers.Handler{Store: store}
+	service := services.NewTaskService()
+	handler := handlers.Handler{Service: service}
 	router := mux.NewRouter()
-	fmt.Println("Server is starting...") // ← добавь это для проверки
 	router.HandleFunc("/task", handler.AddTask).Methods("POST")
 	router.HandleFunc("/task", handler.PutTask).Methods("PUT")
 	router.HandleFunc("/task", handler.DeleteTask).Methods("DELETE")

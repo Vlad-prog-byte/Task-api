@@ -6,13 +6,13 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"task-api/internals/models"
-	"task-api/internals/storages"
+	"task-api/internals/services"
 	"testing"
 )
 
 func TestGetTasks(t *testing.T) {
-	handler := Handler{Store: storages.NewMemoryStore()}
-	handler.Store.Reset()
+	handler := Handler{Service: services.NewTaskService()}
+	handler.Service.Reset()
 	req := httptest.NewRequest(http.MethodGet, "/tasks", nil)
 	w := httptest.NewRecorder()
 
@@ -31,8 +31,8 @@ func TestGetTasks(t *testing.T) {
 }
 
 func TestAddTask(t *testing.T) {
-	handler := Handler{Store: storages.NewMemoryStore()}
-	handler.Store.Reset()
+	handler := Handler{Service: services.NewTaskService()}
+	handler.Service.Reset()
 	var b bytes.Buffer
 	task := models.CreateTask{
 		Title: "check adding task",
@@ -70,8 +70,8 @@ func TestAddTask(t *testing.T) {
 }
 
 func TestDeleteTask(t *testing.T) {
-	handler := Handler{Store: storages.NewMemoryStore()}
-	handler.Store.Reset()
+	handler := Handler{Service: services.NewTaskService()}
+	handler.Service.Reset()
 
 	var b bytes.Buffer
 	task := models.CreateTask{
@@ -109,8 +109,8 @@ func TestDeleteTask(t *testing.T) {
 }
 
 func TestPutTask(t *testing.T) {
-	handler := Handler{Store: storages.NewMemoryStore()}
-	handler.Store.Reset()
+	handler := Handler{Service: services.NewTaskService()}
+	handler.Service.Reset()
 
 	var b bytes.Buffer
 	task := models.CreateTask{
