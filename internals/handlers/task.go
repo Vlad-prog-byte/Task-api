@@ -25,8 +25,19 @@ func (h *Handler)AddTask(w http.ResponseWriter, req *http.Request) {
 		SendSimpleResponse(w, map[string]string{"error": err.Error()})
         return
 	}
-	h.Service.Add(data.Title, data.Description)
-	SendSimpleResponse(w, map[string]string{"status": "Task added"})
+	task, err := h.Service.Add(data.Title, data.Description)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		SendSimpleResponse(w, map[string]string{"error": err.Error()})
+        return
+	}
+	res, err := json.Marshal(task)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		SendSimpleResponse(w, map[string]string{"error": err.Error()})
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(res)
 }
 
 

@@ -7,7 +7,7 @@ import (
 )
 
 type TaskStore interface {
-    Add(title, description string)
+    Add(title, description string) models.Task
     GetAll() []models.Task
     Update(id int, title, description string, isDone bool) error
     Delete(id int) error
@@ -41,11 +41,12 @@ func (store *taskStore)newTask(title, description string) models.Task {
 
 var Store = &taskStore{tasks: make([]models.Task, 0)}
 
-func (store *taskStore) Add(title, description string) {
+func (store *taskStore) Add(title, description string) models.Task {
 	task := store.newTask(title, description)
 	store.mu.Lock()
 	defer store.mu.Unlock()
 	store.tasks = append(store.tasks, task)
+	return task
 }
 
 func (store *taskStore) GetAll() []models.Task {

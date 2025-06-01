@@ -1,12 +1,13 @@
 package services
 
 import (
+	"errors"
 	"task-api/internals/models"
 	"task-api/internals/storages"
 )
 
 type TaskService interface {
-    Add(title, description string)
+    Add(title, description string) (models.Task, error)
     GetAll() []models.Task
     Update(id int, title, description string, isDone bool) error
     Delete(id int) error
@@ -21,8 +22,11 @@ func NewTaskService() TaskService {
 	return &taskService{store: storages.NewMemoryStore()}
 }
 
-func (service *taskService) Add(title, description string) {
-	service.store.Add(title, description)
+func (service *taskService) Add(title, description string) (models.Task, error){
+	if title == "" {
+		return models.Task{}, errors.New("title is required")
+	}
+	return service.store.Add(title, description), nil
 }
 
 func (service *taskService) GetAll() []models.Task {
