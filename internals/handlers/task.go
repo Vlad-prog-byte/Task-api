@@ -5,12 +5,14 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+	"task-api/internals/logger"
 	"task-api/internals/models"
 	"task-api/internals/services"
 )
 
 type Handler struct {
 	Service services.TaskService
+	Logger logger.TaskLogger
 }
 
 func SendSimpleResponse(w http.ResponseWriter, response map[string]string) {
@@ -31,6 +33,7 @@ func (h *Handler)AddTask(w http.ResponseWriter, req *http.Request) {
 		SendSimpleResponse(w, map[string]string{"error": err.Error()})
         return
 	}
+	go h.Logger.Log(logger.LogEvent{Type: logger.LogCreate, Task: task})
 	res, err := json.Marshal(task)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -66,12 +69,20 @@ func (h *Handler)PutTask(w http.ResponseWriter, req *http.Request) {
 		SendSimpleResponse(w, map[string]string{"error": err.Error()})
         return
 	}
-	if err = h.Service.Update(id, data.Title, data.Description, data.IsDone); err != nil {
+	task, err := h.Service.Update(id, data.Title, data.Description, data.IsDone)
+	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		SendSimpleResponse(w, map[string]string{"error": err.Error()})
 		return
 	}
-	SendSimpleResponse(w, map[string]string{"status": "Task edited"})
+	go h.Logger.Log(logger.LogEvent{Type: logger.LogUpdate, Task: task})
+	res, err := json.Marshal(task)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		SendSimpleResponse(w, map[string]string{"error": err.Error()})
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(res)
 
 }
 
@@ -81,11 +92,19 @@ func (h *Handler)DeleteTask(w http.ResponseWriter, req *http.Request) {
 		SendSimpleResponse(w, map[string]string{"error": err.Error()})
 		return
 	}
-	if err = h.Service.Delete(id); err != nil {
+	task, err := h.Service.Delete(id)
+	if err != nil {
 		SendSimpleResponse(w, map[string]string{"error": err.Error()})
 		return
 	}
-	SendSimpleResponse(w, map[string]string{"status": "Task deleted"})
+	go h.Logger.Log(logger.LogEvent{Type: logger.LogDelete, Task: task})
+	res, err := json.Marshal(task)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		SendSimpleResponse(w, map[string]string{"error": err.Error()})
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(res)
 }
 
 func (h *Handler)GetTasks(w http.ResponseWriter, req *http.Request) {

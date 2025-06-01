@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"net/http"
 	"task-api/internals/handlers"
+	"task-api/internals/logger"
 	"task-api/internals/services"
 	"github.com/gorilla/mux"
 )
 
 func main () {
 	service := services.NewTaskService()
-	handler := handlers.Handler{Service: service}
+	logger := logger.NewTaskLogger()
+	handler := handlers.Handler{Service: service, Logger: logger}
 	router := mux.NewRouter()
 	router.HandleFunc("/task", handler.AddTask).Methods("POST")
 	router.HandleFunc("/task", handler.PutTask).Methods("PUT")
@@ -20,5 +22,6 @@ func main () {
 	if err != nil {
         fmt.Println("Server error:", err)
     }
+	logger.Close()
 }
 

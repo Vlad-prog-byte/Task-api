@@ -9,8 +9,8 @@ import (
 type TaskService interface {
     Add(title, description string) (models.Task, error)
     GetAll() []models.Task
-    Update(id int, title, description string, isDone bool) error
-    Delete(id int) error
+    Update(id int, title, description string, isDone bool) (models.Task, error)
+    Delete(id int) (models.Task, error)
 	Reset()
 }
 
@@ -26,18 +26,19 @@ func (service *taskService) Add(title, description string) (models.Task, error){
 	if title == "" {
 		return models.Task{}, errors.New("title is required")
 	}
-	return service.store.Add(title, description), nil
+	task := service.store.Add(title, description)
+	return task, nil
 }
 
 func (service *taskService) GetAll() []models.Task {
 	return service.store.GetAll()
 }
 
-func (service *taskService) Update(id int, title, description string, isDone bool) error {
+func (service *taskService) Update(id int, title, description string, isDone bool) (models.Task, error) {
 	return service.store.Update(id, title, description, isDone)
 }
 
-func (service *taskService) Delete(id int) error {
+func (service *taskService) Delete(id int) (models.Task, error) {
 	return service.store.Delete(id)
 }
 
