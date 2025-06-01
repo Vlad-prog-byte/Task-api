@@ -34,12 +34,10 @@ func (store *taskStore) Reset() {
 }
 
 func (store *taskStore)newTask(title, description string) models.Task {
-	task := models.Task{ID: Store.id, Title: title, Description: description}
+	task := models.Task{ID: store.id, Title: title, Description: description}
 	store.id++
 	return task
 }
-
-var Store = &taskStore{tasks: make([]models.Task, 0)}
 
 func (store *taskStore) Add(title, description string) models.Task {
 	task := store.newTask(title, description)
