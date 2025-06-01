@@ -60,7 +60,7 @@ func NewTaskLogger() TaskLogger {
 		for event := range logger.logChan {
 			currentTime := time.Now()
 			logMessage := fmt.Sprintf("%s [%s] Task ID: %d | Title: %s\n", currentTime.Format("2006-01-02 15:04:05"), event.Type, event.Task.ID, event.Task.Title)
-			fmt.Println(logMessage)
+			fmt.Print(logMessage)
 			logger.mu.Lock()
 			f.Write([]byte(logMessage))
 			logger.mu.Unlock()
