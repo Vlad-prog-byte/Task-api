@@ -15,6 +15,7 @@ const (
 	LogCreate TaskLogType = "CREATE"
 	LogDelete TaskLogType = "DELETE"
 	LogUpdate TaskLogType = "UPDATE"
+	LogArchiver TaskLogType = "ARCHIVER"
 )
 
 type LogEvent struct {
